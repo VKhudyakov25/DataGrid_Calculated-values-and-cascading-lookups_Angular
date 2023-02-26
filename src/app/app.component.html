@@ -1,51 +1,52 @@
-<!-- <h3>Object as DataSource</h3>
-<dx-data-grid
-  [dataSource]="employees"
-  keyExpr="id"
-  class="grid"
-  [showBorders]="true"
-  (onRowInserting)="insertRow($event)"
-  (onRowUpdating)="updateRow($event)"
->
-  <dxi-column dataField="firstName" [width]="200">
-    <dxi-validation-rule
-      type="custom"
-      [reevaluate]="true"
-      message="Fisrt Name can't be empty when Last Name is specified"
-      [validationCallback]="customCallback"
-    ></dxi-validation-rule>
-  </dxi-column>
-  <dxi-column dataField="lastName" [width]="200"> </dxi-column>
+<h3>Cascading lookups</h3>
+<dx-data-grid [dataSource]="employees" [showBorders]="true">
   <dxo-editing
-    mode="popup"
+    mode="row"
     [allowUpdating]="true"
-    [allowDeleting]="true"
     [allowAdding]="true"
   ></dxo-editing>
+  <dxi-column
+    dataField="employeeId"
+    caption="Name"
+    [setCellValue]="setEmployeeValue"
+    [width]="200"
+  >
+    <dxo-lookup
+      [dataSource]="employees"
+      valueExpr="employeeId"
+      displayExpr="fullName"
+    ></dxo-lookup>
+  </dxi-column>
+  <dxi-column
+    dataField="countryId"
+    caption="Country"
+    [setCellValue]="setCountryValue"
+    [width]="200"
+  >
+    <dxo-lookup
+      [dataSource]="getFilteredCountries"
+      valueExpr="countryId"
+      displayExpr="name"
+    ></dxo-lookup>
+  </dxi-column>
+  <dxi-column dataField="orderId" caption="Order" [width]="200">
+    <dxo-lookup
+      [dataSource]="getFilteredOrders"
+      valueExpr="orderId"
+      displayExpr="orderName"
+    ></dxo-lookup>
+  </dxi-column>
 </dx-data-grid>
-<br /> -->
-<h3>ArrayStore as DataSource</h3>
-<dx-data-grid
-  [dataSource]="store"
-  keyExpr="id"
-  class="grid"
-  [showBorders]="true"
-  (onRowInserting)="insertRow($event)"
-  (onRowUpdating)="updateRow($event)"
->
-  <dxi-column dataField="firstName" [width]="200">
-    <dxi-validation-rule
-      type="custom"
-      [reevaluate]="true"
-      message="Fisrt Name can't be empty when Last Name is specified"
-      [validationCallback]="customCallback"
-    ></dxi-validation-rule>
-  </dxi-column>
-  <dxi-column dataField="lastName" [width]="200"> </dxi-column>
-  <dxo-editing
-    mode="popup"
-    [allowUpdating]="true"
-    [allowDeleting]="true"
-    [allowAdding]="true"
-  ></dxo-editing>
+
+<br />
+<h3>Calculated values</h3>
+<dx-data-grid [dataSource]="products" [showBorders]="true">
+  <dxi-column dataField="ProductName" [width]="200"></dxi-column>
+  <dxi-column dataField="Price" [width]="200"></dxi-column>
+  <dxi-column dataField="Count" [width]="200"></dxi-column>
+  <dxi-column
+    caption="Total Price"
+    [width]="200"
+    [calculateCellValue]="totalPriceValue"
+  ></dxi-column>
 </dx-data-grid>

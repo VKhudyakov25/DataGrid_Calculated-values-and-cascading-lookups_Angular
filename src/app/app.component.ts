@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
-import ArrayStore from 'devextreme/data/array_store';
 
-import { Employee, AppService } from './app.service';
+import { Employee, AppService, Country, Order, Product } from './app.service';
 
 @Component({
   selector: 'app-root',
@@ -10,37 +9,57 @@ import { Employee, AppService } from './app.service';
   providers: [AppService],
 })
 export class AppComponent {
-  store: ArrayStore;
   employees: Employee[];
+  countries: Country[];
+  orders: Order[];
+  products: Product[];
+
   constructor(service: AppService) {
+    this.getFilteredCountries = this.getFilteredCountries.bind(this);
+    this.getFilteredOrders = this.getFilteredOrders.bind(this);
     this.employees = service.getEmployees();
-    this.customCallback = this.customCallback.bind(this);
-    this.store = new ArrayStore({
-      key: 'id',
-      data: this.employees,
-    });
+    this.countries = service.getCoutries();
+    this.orders = service.getOrders();
+    this.products = service.getProducts();
+    console.log(this.orders);
   }
-  customCallback(params: any) {
-    if (!params.data.firstName) {
-      return !!params.data.lastName ? false : true;
-    }
-    return true;
+  setEmployeeValue(rowData: any, value: any) {
+    rowData.employeeId = value;
+    rowData.countryId = null;
+    rowData.orderId = null;
   }
-
-  insertRow(e: any) {
-    if (!e.data.firstName && !e.data.lastName) {
-      e.data.firstName = 'John';
-      e.data.lastName = 'Doe';
-    }
+  setCountryValue(rowData: any, value: any) {
+    rowData.countryId = value;
+    rowData.orderId = null;
   }
 
-  updateRow(e: any) {
-    if (
-      (e.newData.firstName === '' || e.oldData.firstName === '') &&
-      (e.newData.lastName === '' || e.oldData.lastName === '')
-    ) {
-      e.newData.firstName = 'John';
-      e.newData.lastName = 'Doe';
-    }
+  getFilteredCountries(options: any) {
+    return {
+      store: this.countries,
+      filter: options.data
+        ? ['employeeId', '=', options.data.employeeId]
+        : null,
+    };
+  }
+  getFilteredOrders(options: any) {
+    console.log('here', options);
+    let filterArray;
+    if (options.data) {
+      filterArray = options.data.countryId
+        ? [
+            ['employeeId', '=', options.data.employeeId],
+            ['countryId', '=', options.data.countryId],
+          ]
+        : ['employeeId', '=', options.data.employeeId];
+    } else filterArray = null;
+
+    return {
+      store: this.orders,
+      filter: filterArray,
+    };
+  }
+
+  totalPriceValue(rowData: any) {
+    return rowData.Price * rowData.Count;
   }
 }
